@@ -40,9 +40,10 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import org.vm.notifier.ui.theme.NotifierTheme
 import timber.log.Timber
+import java.security.Permission
 import kotlin.system.exitProcess
 
-val NOTIFICATION_ID = 0x335577;
+val NOTIFICATION_ID = 0x357;
 
 
 class MainActivity : ComponentActivity() {
@@ -77,45 +78,14 @@ class MainActivity : ComponentActivity() {
             notificationManager.createNotificationChannel(mChannel)
         }
 
+        checkPermissions()
+
         enableEdgeToEdge()
         setContent {
             NotifierTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     Box(modifier = Modifier.padding(innerPadding)) {
-                        //MainU(permissionsGranted.collectAsState().value)
-                        Button(onClick = {
-                            var builder = NotificationCompat.Builder(applicationContext, applicationContext.getString(R.string.channel_id))
-                                .setSmallIcon(R.drawable.outline_error_24)
-                                .setContentTitle("My notification")
-                                .setContentText("Much longer text that cannot fit one line...")
-                                .setStyle(
-                                    NotificationCompat.BigTextStyle()
-                                    .bigText("Much longer text that cannot fit one line..."))
-                                .setPriority(NotificationCompat.PRIORITY_HIGH)
-
-                            with(NotificationManagerCompat.from(applicationContext)) {
-                                if (ActivityCompat.checkSelfPermission(
-                                        applicationContext,
-                                        Manifest.permission.POST_NOTIFICATIONS
-                                    ) != PackageManager.PERMISSION_GRANTED
-                                ) {
-                                    // TODO: Consider calling
-                                    // ActivityCompat#requestPermissions
-                                    // here to request the missing permissions, and then overriding
-                                    // public fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>,
-                                    //                                        grantResults: IntArray)
-                                    // to handle the case where the user grants the permission. See the documentation
-                                    // for ActivityCompat#requestPermissions for more details.
-
-                                    return@with
-                                }
-                                // notificationId is a unique int for each notification that you must define.
-                                notify(NOTIFICATION_ID, builder.build())
-                            }
-
-                        }){
-                            Text("Notify")
-                        }
+                        MainU(permissionsGranted.collectAsState().value)
                     }
                 }
             }
@@ -183,13 +153,19 @@ class MainActivity : ComponentActivity() {
 //        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
 //            checkIsPermissionGranted(android.Manifest.permission.READ_MEDIA_AUDIO, requiredPermissions)
 //        }
-        requiredPermissions += android.Manifest.permission.POST_NOTIFICATIONS;
-        requestPermissionLauncher.launch(requiredPermissions.toTypedArray())
+//        requiredPermissions += android.Manifest.permission.POST_NOTIFICATIONS;
+        if(requiredPermissions.isNotEmpty()) {
+            requestPermissionLauncher.launch(requiredPermissions.toTypedArray())
+        }else{
+            _statusString.value = ""
+            _permissionsGranted.value = true
+        }
 
     }
 
     private fun checkIsPermissionGranted(permission: String, collector: MutableList<String>){
-        if(ContextCompat.checkSelfPermission(applicationContext, permission) == -1){
+        val permissionRequest = ContextCompat.checkSelfPermission(applicationContext, permission)
+        if(permissionRequest == PackageManager.PERMISSION_DENIED){
             collector += permission
         }
     }
@@ -298,7 +274,50 @@ class MainActivity : ComponentActivity() {
 
     @Composable
     fun MainScreen() {
-        Text("Main screen")
+        Column {
+            Text("Main screen")
+            Button(onClick = {
+                var builder = NotificationCompat.Builder(
+                    applicationContext,
+                    applicationContext.getString(R.string.channel_id)
+                )
+                    .setSmallIcon(R.drawable.outline_error_24)
+                    .setContentTitle("My notification")
+                    .setContentText("Much longer text that cannot fit one line...")
+                    .setStyle(
+                        NotificationCompat.BigTextStyle()
+                            .bigText("Much longer text that cannot fit one line...")
+                    )
+                    .setPriority(NotificationCompat.PRIORITY_HIGH)
+
+                with(NotificationManagerCompat.from(applicationContext)) {
+
+                    val req = ActivityCompat.checkSelfPermission(
+                        applicationContext,
+                        Manifest.permission.POST_NOTIFICATIONS
+                    )
+
+                    if ( req != PackageManager.PERMISSION_GRANTED
+                    ) {
+                        // TODO: Consider calling
+                        // ActivityCompat#requestPermissions
+                        // here to request the missing permissions, and then overriding
+                        // public fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>,
+                        //                                        grantResults: IntArray)
+                        // to handle the case where the user grants the permission. See the documentation
+                        // for ActivityCompat#requestPermissions for more details.
+
+                        return@with
+                    }
+                    // notificationId is a unique int for each notification that you must define.
+                    notify(NOTIFICATION_ID, builder.build())
+                }
+
+            }) {
+                Text("Notify")
+            }
+        }
+
     }
 }
 
