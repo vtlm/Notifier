@@ -4,7 +4,7 @@
     <string name="checking_permissions">Checking permissions</string>
     <string name="Go_To_Settings">Go_To_Settings</string>
     <string name="channel_id">SecurityNotifyChannel</string>
-    <string name="channel_name">SecurityNotify</string>
+    <string name="channel_name">SecurityNotifyChannel</string>
     <string name="channel_description">Notifications about security events</string>
     <string name="Exit">Exit</string>
 </resources>

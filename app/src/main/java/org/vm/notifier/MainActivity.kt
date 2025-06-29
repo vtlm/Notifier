@@ -279,7 +279,7 @@ class MainActivity : ComponentActivity() {
             Button(onClick = {
                 var builder = NotificationCompat.Builder(
                     applicationContext,
-                    applicationContext.getString(R.string.channel_id)
+                    "SECURITY_NOTIFY"//applicationContext.getString(R.string.channel_id)
                 )
                     .setSmallIcon(R.drawable.outline_error_24)
                     .setContentTitle("My notification")
@@ -320,6 +320,36 @@ class MainActivity : ComponentActivity() {
 
     }
 }
+
+
+//private fun sendNotification() {
+//    // Intent that triggers when the notification is tapped
+////    val intent = Intent(this, AfterNotification::class.java).apply {
+////        flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+////    }
+////    val pendingIntent = PendingIntent.getActivity(
+////        this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+////    )
+//
+//    // Custom layout for the notification content
+////    val contentView = RemoteViews(packageName, R.layout.activity_after_notification)
+//
+//    // Build the notification
+//    val builder = NotificationCompat.Builder(this, channelId)
+//        .setSmallIcon(R.drawable.gfg_logo) // Notification icon
+////        .setContent(contentView) // Custom notification content
+//        .setContentTitle("Hello") // Title displayed in the notification
+//        .setContentText("Welcome to GeeksforGeeks!!") // Text displayed in the notification
+////        .setContentIntent(pendingIntent) // Pending intent triggered when tapped
+//        .setAutoCancel(true) // Dismiss notification when tapped
+//        .setPriority(NotificationCompat.PRIORITY_HIGH) // Notification priority for better visibility
+//
+//    // Display the notification
+//    with(NotificationManagerCompat.from(this)) {
+//        notify(notificationId, builder.build())
+//    }
+//}
+
 
 @Composable
 fun Greeting(name: String, modifier: Modifier = Modifier) {
